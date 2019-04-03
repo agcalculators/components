@@ -1,0 +1,114 @@
+@import 'nib';
+
+body {
+  font-family: sans-serif;
+  padding: 1.5rem;
+}
+
+.app-calc-form {
+  background-color: var(--calculator-form-background-color, #fff);
+}
+
+.app-calc-form__header {
+  padding: 10px 0 0;
+  border-bottom: 4px solid #ebebeb;
+  margin-bottom: 20px;
+  }
+
+.app-calc-form__title {
+  font-size: 2rem;
+  padding: 0;
+  margin: 0 0 8px 0;
+}
+
+.app-calc-form__description {
+    padding: 0;
+  }
+
+.app-calc-form .app-calc-form__control {
+    background-color: #fafcfc;
+    border: none;
+    box-shadow: inset 0 0 0 2px #dfe3e6;
+    color: #17394d;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    border-radius: 3px;
+    display: block;
+    line-height: 20px;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    transition-property: background-color,border-color,box-shadow;
+    transition-duration: 85ms;
+    transition-timing-function: ease;
+    width: var(--calc-form-control-width, 100%);
+}
+
+.app-calc-form .app-calc-form__control.app-has-errors {
+    box-shadow: inset 0 0 0 2px maroon;    
+}
+
+.app-calc-form .app-calc-form__control.app-is-valid {
+    box-shadow: inset 0 0 0 2px green;    
+}
+
+.app-calc-form .app-calc-form__label {
+      font-weight: 700;
+      color: #17394d;
+      font-size: 14px;
+      line-height: 16px;
+      margin-top: 16px;
+      margin-bottom: 8px;
+      display: block;
+}
+
+.app-calc-form .app-calc-form__submit-action,
+.app-calc-form .app-calc-form__cancel-action {
+    background-color: #ebeef0;
+    box-shadow: 0 1px 0 0 rgba(9,45,66,.13);
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    font-weight: 700;
+    line-height: 20px;
+    margin: 8px 4px 0 0;
+    padding: 6px 12px;
+    text-align: center;
+  }
+
+  .app-calc-form .app-calc-form__submit-action {
+    background-color: green;
+    color: #fff;
+    float: right;
+  }
+
+  .app-calc-form .app-calc-form__error-message {
+    color: maroon;
+  }
+
+  .app-calc-results .app-calc-results__item {
+    padding: 8px 16px;
+    border: 1px solid #dcdcdc;
+  }
+  .app-calc-results .app-calc-results__item--output {
+    background-color: #ebebeb;    
+  }
+
+  .app-calc-results .app-calc-results__item span {
+    font-weight: 500;
+    margin-right: 10px;
+  }
+  .app-calc-results .app-calc-results__item--output span {
+    font-weight: 550;
+  }
+.app-calc-form__help-text {
+  padding: 0;
+  margin: 4px 0;
+  font-size: 1em;
+  color: #7f7f7f;
+}
+
+  a.app-calc-link {
+    display: block;
+    width: 100%;
+    padding: 8px 16px;
+  }

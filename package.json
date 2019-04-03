@@ -1,0 +1,38 @@
+{
+  "name": "@agc-calculators/components",
+  "version": "1.0.0",
+  "description": "Common calculator components",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "scripts": {
+    "dev": "node watch",
+    "prepare": "rollup -c",
+    "build": "rollup -c",
+    "build-css": "stylus -w -u nib css/index.styl -c -o public/css/main.css",
+    "build-js": "rollup -m -w -c example.config.js -f iife js/index.js -o public/js/main.js",
+    "uglify": "uglifyjs public/js/main.js -cm -o public/js/main.min.js",
+    "start": "node server"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.4.3",
+    "@redom/store": "~1.0.0",
+    "nib": "~1.1.2",
+    "redom": "~3.12.3",
+    "rollup": "~0.59.4",
+    "rollup-plugin-babel": "^4.3.2",
+    "rollup-plugin-buble": "~0.19.2",
+    "rollup-plugin-butternut": "~0.1.0",
+    "rollup-plugin-node-resolve": "~3.3.0",
+    "rollup-plugin-terser": "^4.0.4",
+    "stylus": "~0.54.5"
+  },
+  "dependencies": {
+    "@agc-calculators/calculators-core": "1.0.0",
+    "@agc-calculators/livestock": "1.0.0",
+    "@johnrob1880/restyled": "^1.0.21",
+    "compression": "~1.7.2",
+    "express": "~4.16.3"
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "@agc-calculators/components",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Common calculator components",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -29,8 +29,8 @@
     "stylus": "~0.54.5"
   },
   "dependencies": {
-    "@agc-calculators/calculators-core": "1.0.0",
-    "@agc-calculators/livestock": "1.0.0",
+    "@agc-calculators/calculators-core": "1.0.1",
+    "@agc-calculators/livestock": "1.0.1",
     "@johnrob1880/restyled": "^1.0.21",
     "compression": "~1.7.2",
     "express": "~4.16.3"

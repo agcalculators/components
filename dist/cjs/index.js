@@ -5,6 +5,14 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var redom = require('redom');
 var calculatorsCore = require('@agc-calculators/calculators-core');
 
+const fnOrProp = (prop, data = {}) => {
+  if (typeof prop === 'function') {
+    return prop(data);
+  }
+
+  return prop;
+};
+
 const inputDate = date => {
   if (typeof date === 'undefined') {
     return '';
@@ -15,6 +23,54 @@ const inputDate = date => {
   var mm = `0${newDate.getMonth() + 1}`.slice(-2);
   var y = newDate.getFullYear();
   return `${y}-${mm}-${dd}`;
+};
+
+const elementTypes = {
+  'text': (key, inp, cls) => redom.el(`input.${cls}`, {
+    id: key,
+    type: 'text',
+    name: key,
+    value: inp.default ? fnOrProp(inp.default) : ''
+  }),
+  'textarea': (key, inp, cls) => redom.el(`textarea.${cls}`, {
+    id: key,
+    type: 'text',
+    name: key,
+    value: inp.default ? fnOrProp(inp.default) : ''
+  }),
+  'number': (key, inp, cls) => redom.el(`input.${cls}`, {
+    id: key,
+    type: 'number',
+    name: key,
+    value: inp.default ? fnOrProp(inp.default) : ''
+  }),
+  'select': (key, inp, cls) => redom.el(`select.${cls}`, {
+    id: key,
+    name: key
+  }, [...buildOptions(inp, inp.default || '')]),
+  'date': (key, inp, cls) => redom.el(`input.${cls}`, {
+    id: key,
+    type: 'date',
+    name: key,
+    value: inp.default ? inputDate(fnOrProp(inp.default)) : inputDate(new Date())
+  })
+};
+
+const buildOptions = (inp, selected) => {
+  let opts = inp.options || [];
+  return opts.reduce((arr, current) => {
+    let opt = redom.el('option', {
+      value: current.value || current,
+      textContent: current.text || current
+    });
+
+    if (selected == current.value) {
+      opt.setAttribute('selected', true);
+    }
+
+    arr.push(opt);
+    return arr;
+  }, []);
 };
 
 const initData = inputs => {
@@ -30,60 +86,10 @@ const initData = inputs => {
 };
 
 const create = (ns = 'app') => {
-  const fnOrProp = prop => {
-    if (typeof prop === 'function') {
-      return prop();
-    }
-
-    return prop;
-  };
-
   const withEvents = (el, eventHandlers) => {
     el.addEventListener('change', eventHandlers['change']);
     el.addEventListener('keydown', eventHandlers['keydown']);
     return el;
-  };
-
-  const elementTypes = {
-    'text': (key, inp, cls) => redom.el(`input.${cls}`, {
-      id: key,
-      type: 'text',
-      name: key,
-      value: inp.default ? fnOrProp(inp.default) : ''
-    }),
-    'number': (key, inp, cls) => redom.el(`input.${cls}`, {
-      id: key,
-      type: 'number',
-      name: key,
-      value: inp.default ? fnOrProp(inp.default) : ''
-    }),
-    'select': (key, inp, cls) => redom.el(`select.${cls}`, {
-      id: key,
-      name: key
-    }, [...buildOptions(inp, inp.default || '')]),
-    'date': (key, inp, cls) => redom.el(`input.${cls}`, {
-      id: key,
-      type: 'date',
-      name: key,
-      value: inp.default ? inputDate(fnOrProp(inp.default)) : inputDate(new Date())
-    })
-  };
-
-  const buildOptions = (inp, selected) => {
-    let opts = inp.options || [];
-    return opts.reduce((arr, current) => {
-      let opt = redom.el('option', {
-        value: current.value || current,
-        textContent: current.text || current
-      });
-
-      if (selected == current.value) {
-        opt.setAttribute('selected', true);
-      }
-
-      arr.push(opt);
-      return arr;
-    }, []);
   };
 
   const buildForm = (calculator, eventHandlers, classNamesList) => {
@@ -374,6 +380,66 @@ const create = (ns = 'app') => {
   };
 };
 
+const calendarIcon = (size = 16, options) => {
+  const {
+    stroke = "currentColor",
+    fill = "currentColor",
+    onclick
+  } = options || {};
+  let el = redom.svg("svg", redom.svg("symbol", {
+    id: "calendar",
+    viewBox: `0 0 32 32`
+  }, redom.svg("path", {
+    x: 0,
+    y: 0,
+    width: 32,
+    height: 32,
+    stroke: stroke,
+    fill: fill,
+    d: "M10 12h4v4h-4zM16 12h4v4h-4zM22 12h4v4h-4zM4 24h4v4h-4zM10 24h4v4h-4zM16 24h4v4h-4zM10 18h4v4h-4zM16 18h4v4h-4zM22 18h4v4h-4zM4 18h4v4h-4zM26 0v2h-4v-2h-14v2h-4v-2h-4v32h30v-32h-4zM28 30h-26v-22h26v22z"
+  })), redom.svg("use", {
+    xlink: {
+      href: "#calendar"
+    }
+  }));
+
+  if (onclick) {
+    el.addEventListener("click", onclick);
+  }
+
+  return el;
+};
+const dashboardIcon = (size = 16, options) => {
+  const {
+    stroke = "currentColor",
+    fill = "currentColor",
+    onclick
+  } = options || {};
+  let el = redom.svg("svg", redom.svg("symbol", {
+    id: "dashboard",
+    viewBox: `0 0 32 32`
+  }, redom.svg("path", {
+    x: 0,
+    y: 0,
+    width: 32,
+    height: 32,
+    stroke: stroke,
+    fill: fill,
+    d: "M4 28h28v4h-32v-32h4zM9 26c-1.657 0-3-1.343-3-3s1.343-3 3-3c0.088 0 0.176 0.005 0.262 0.012l3.225-5.375c-0.307-0.471-0.487-1.033-0.487-1.638 0-1.657 1.343-3 3-3s3 1.343 3 3c0 0.604-0.179 1.167-0.487 1.638l3.225 5.375c0.086-0.007 0.174-0.012 0.262-0.012 0.067 0 0.133 0.003 0.198 0.007l5.324-9.316c-0.329-0.482-0.522-1.064-0.522-1.691 0-1.657 1.343-3 3-3s3 1.343 3 3c0 1.657-1.343 3-3 3-0.067 0-0.133-0.003-0.198-0.007l-5.324 9.316c0.329 0.481 0.522 1.064 0.522 1.691 0 1.657-1.343 3-3 3s-3-1.343-3-3c0-0.604 0.179-1.167 0.487-1.638l-3.225-5.375c-0.086 0.007-0.174 0.012-0.262 0.012s-0.176-0.005-0.262-0.012l-3.225 5.375c0.307 0.471 0.487 1.033 0.487 1.637 0 1.657-1.343 3-3 3z"
+  })), redom.svg("use", {
+    xlink: {
+      href: "#dashboard"
+    }
+  }));
+
+  if (onclick) {
+    el.addEventListener("click", onclick);
+  } //el.style = { display: 'inline-block', strokeWidth: 0, stroke: stroke, fill: fill };
+
+
+  return el;
+};
+
 const formatDate = (date, sep = "/") => {
   let newDate = new Date(date);
   var dd = newDate.getDate();
@@ -400,6 +466,7 @@ const create$1 = (ns = "app") => {
     constructor(calculator) {
       this.calculator = calculator;
       this.excludes = [];
+      this.handlers = [];
       this.el = redom.el(`.${ns}-calc-results`);
       this.includeInputs = false;
     }
@@ -417,7 +484,29 @@ const create$1 = (ns = "app") => {
       if (results) {
         this.results = results;
         this.el.innerHTML = "";
-        console.log(this.calculator, results);
+        const dashboardItems = this.calculator.dashboard || {};
+        const calendarItems = this.calculator.calendar || {};
+
+        const dispatchAction = (tag, payload) => {
+          (this.handlers || []).forEach(handler => {
+            handler(tag, payload);
+          });
+        };
+
+        const getActions = key => {
+          return redom.el(`.${ns}-calc-results__item-actions`, [dashboardItems[key] ? redom.el(`span.${ns}-calc-results__item-action`, dashboardIcon(16, {
+            onclick: () => dispatchAction('createDashboardItem', {
+              item: dashboardItems[key],
+              data: results
+            })
+          })) : '', calendarItems[key] ? redom.el(`span.${ns}-calc-results__item-action`, calendarIcon(16, {
+            onclick: () => dispatchAction('createCalendarItem', {
+              item: calendarItems[key],
+              data: results
+            })
+          })) : '']);
+        };
+
         let label;
         Object.keys(this.calculator.outputs).forEach(key => {
           if (this.excludes.indexOf(key) !== -1) {
@@ -435,7 +524,7 @@ const create$1 = (ns = "app") => {
             valueText = format(results[key], output);
           }
 
-          label = redom.el(`p.${ns}-calc-results__item.${ns}-calc-results__item--output`, [redom.el("span", redom.text(`${output.label}:`)), redom.text(valueText)]);
+          label = redom.el(`p.${ns}-calc-results__item.${ns}-calc-results__item--output`, [redom.el("span", redom.text(`${output.label}:`)), redom.text(valueText), getActions(key)]);
           this.el.appendChild(label);
         });
 
@@ -482,6 +571,14 @@ const create$1 = (ns = "app") => {
       return this;
     }
 
+    onAction(handler) {
+      if (typeof handler === 'function') {
+        this.handlers.push(handler);
+      }
+
+      return this;
+    }
+
   }
 
   return {
@@ -489,5 +586,171 @@ const create$1 = (ns = "app") => {
   };
 };
 
+const create$2 = (ns = "app") => {
+  class MeasureWidget {
+    constructor(props, data) {
+      const {
+        title,
+        details,
+        measure,
+        units = '',
+        formatters = {}
+      } = props;
+      this.propData = { ...data,
+        units,
+        formatters
+      };
+      this.el = redom.el(`.${ns}-measure-widget`, [this.titleEl = redom.el(`h4.${ns}-measure-widget__title`, {
+        textContent: fnOrProp(title, this.propData)
+      }), this.measureEl = redom.el(`.${ns}-measure-widget__measure`, {
+        innerText: fnOrProp(measure, this.propData)
+      }), this.detailsEl = redom.el(`.${ns}-measure-widget__details`, {
+        innerText: fnOrProp(details, this.propData)
+      })]);
+    }
+
+    update(props) {
+      const {
+        data
+      } = props || {};
+
+      if (data) {
+        const {
+          title,
+          details,
+          measure
+        } = data;
+
+        if (title) {
+          this.titleEl.textContent = title;
+        }
+
+        if (details) {
+          this.detailsEl.innerText = details;
+        }
+
+        if (measure) {
+          this.measureEl.innerText = measure;
+        }
+      }
+    }
+
+  }
+
+  class MeasureWidgetForm {
+    constructor(props, data) {
+      const {
+        title,
+        details,
+        measure,
+        units = '',
+        formatters
+      } = props;
+      this.propData = { ...data,
+        units,
+        formatters
+      };
+      this.data = {};
+      this.handlers = {
+        submit: [],
+        cancel: []
+      };
+      const labelClassName = `${ns}-widget-form__label`;
+      this.controlClassName = `${ns}-widget-form__control`;
+
+      const withEvents = el => {
+        el.addEventListener('change', this.onChange.bind(this));
+        el.addEventListener('keydown', this.onKeydown.bind(this));
+        return el;
+      };
+
+      this.el = redom.el(`form.${ns}-widget-form`, [redom.el(`label.${labelClassName}`, {
+        htmlFor: 'title',
+        textContent: 'Title'
+      }), withEvents(elementTypes['text']('title', {
+        default: fnOrProp(title, this.propData)
+      }, this.controlClassName)), redom.el(`label.${labelClassName}`, {
+        htmlFor: 'measure',
+        textContent: 'Measure'
+      }), withEvents(elementTypes['text']('measure', {
+        default: fnOrProp(measure, this.propData)
+      }, this.controlClassName)), redom.el(`label.${labelClassName}`, {
+        htmlFor: 'details',
+        textContent: 'Details'
+      }), withEvents(elementTypes['text']('details', {
+        default: fnOrProp(details, this.propData)
+      }, this.controlClassName)), redom.el(`.${ns}-widget-form__actions`, [redom.el(`button.${ns}-widget-form__cancel-action`, {
+        innerHTML: 'Cancel',
+        onclick: this.onCancel.bind(this)
+      }), redom.el(`input.${ns}-widget-form__submit-action`, {
+        type: 'submit',
+        value: 'Create',
+        onclick: this.onSubmit.bind(this)
+      })])]);
+    }
+
+    onChange(event) {
+      const {
+        name,
+        value
+      } = event.target;
+      this.data[name] = value;
+    }
+
+    onKeydown(event) {
+      if (event.which === 13 || event.keyCode === 13) {
+        event.preventDefault();
+        event.stopPropagation();
+        let nextInput = calculatorsCore.nextSibling(event.target, this.controlClassName);
+
+        if (nextInput) {
+          nextInput.focus();
+        } else {
+          event.target.blur();
+          this.onSubmit(event);
+        }
+
+        return false;
+      }
+
+      return true;
+    }
+
+    onCancel(event) {
+      event && event.preventDefault();
+      this.handlers['cancel'].forEach(handler => {
+        handler();
+      });
+    }
+
+    onSubmit(event) {
+      event && event.preventDefault();
+      this.handlers['submit'].forEach(handler => {
+        handler(this.data);
+      });
+    }
+
+    listen(event, handler) {
+      if (!this.handlers[event]) {
+        throw new Error(`'${event}' is not supported. Allowed events are submit and cancel.`);
+      }
+
+      if (typeof handler !== 'function') {
+        throw new Error(`Expected listen handler to be a function. Received '${typeof handler}'.`);
+      }
+
+      this.handlers[event].push(handler);
+      return this;
+    }
+
+  }
+
+  return {
+    MeasureWidget,
+    MeasureWidgetForm
+  };
+};
+
 exports.createCalculatorForm = create;
 exports.createCalculatorResults = create$1;
+exports.createMeasureWidget = create$2;

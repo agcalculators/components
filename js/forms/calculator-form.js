@@ -1,15 +1,7 @@
 import { el, text, setChildren } from 'redom';
 import { nextSibling } from '@agc-calculators/calculators-core';
+import { inputDate, elementTypes } from './form-fields';
 
-const inputDate = (date) => {
-    if (typeof date === 'undefined') { return '' }
-
-    let newDate = new Date(date)
-    var dd = `0${newDate.getDate()}`.slice(-2)
-    var mm = `0${newDate.getMonth() + 1}`.slice(-2)
-    var y = newDate.getFullYear();
-    return `${y}-${mm}-${dd}`
-}
 
 const initData = (inputs) => {
     return Object.keys(inputs || {}).reduce((data, current) => {
@@ -23,34 +15,10 @@ const initData = (inputs) => {
 
 const create = (ns = 'app') => {
 
-    const fnOrProp = (prop) => {
-        if (typeof prop === 'function') {
-            return prop();
-        }
-        return prop;
-    }
     const withEvents = (el, eventHandlers) => {
         el.addEventListener('change', eventHandlers['change']);
         el.addEventListener('keydown', eventHandlers['keydown']);
         return el;
-    }
-    const elementTypes = {
-        'text': (key, inp, cls) => el(`input.${cls}`, { id: key, type: 'text', name: key, value: (inp.default ? fnOrProp(inp.default) : '')}),
-        'number': (key, inp, cls) => el(`input.${cls}`, { id: key, type: 'number', name: key, value: (inp.default ? fnOrProp(inp.default) : '')}),
-        'select': (key, inp, cls) => el(`select.${cls}`, { id: key, name: key }, [...buildOptions(inp, inp.default || '')]),
-        'date': (key, inp, cls) => el(`input.${cls}`, { id: key, type: 'date', name: key, value: (inp.default ? inputDate(fnOrProp(inp.default)) : inputDate(new Date()))}),
-    }
-
-    const buildOptions = (inp, selected) => {
-        let opts = inp.options || [];
-        return opts.reduce((arr, current) => {
-            let opt = el('option', { value: current.value || current, textContent: current.text || current}); 
-            if (selected == current.value) {
-                opt.setAttribute('selected', true);
-            }
-            arr.push(opt);
-            return arr;
-        }, []);
     }
     
     const buildForm = (calculator, eventHandlers, classNamesList) => {

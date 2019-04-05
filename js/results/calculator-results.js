@@ -1,4 +1,5 @@
 import { el, text } from "redom";
+import { calendarIcon, dashboardIcon } from '../icons/index';
 
 const formatDate = (date, sep = "/") => {
   let newDate = new Date(date);
@@ -11,6 +12,7 @@ const formatDate = (date, sep = "/") => {
 };
 
 const create = (ns = "app") => {
+
   const format = (val, obj) => {
     switch (obj.type) {
       case "date":
@@ -26,6 +28,7 @@ const create = (ns = "app") => {
     constructor(calculator) {
       this.calculator = calculator;
       this.excludes = [];
+      this.handlers = [];
       this.el = el(`.${ns}-calc-results`);
       this.includeInputs = false;
     }
@@ -40,7 +43,21 @@ const create = (ns = "app") => {
 
         this.el.innerHTML = "";
 
-        console.log(this.calculator, results);
+        const dashboardItems = this.calculator.dashboard || {};
+        const calendarItems = this.calculator.calendar || {};
+
+        const dispatchAction = (tag, payload) => {
+          (this.handlers || []).forEach(handler => {
+            handler(tag, payload);
+          })
+        }
+
+        const getActions = (key) => {
+          return (el(`.${ns}-calc-results__item-actions`, [
+            dashboardItems[key] ? el(`span.${ns}-calc-results__item-action`, dashboardIcon(16, { onclick: () => dispatchAction('createDashboardItem', { item: dashboardItems[key], data: results })})) : '',
+            calendarItems[key] ? el(`span.${ns}-calc-results__item-action`, calendarIcon(16, { onclick: () => dispatchAction('createCalendarItem', { item: calendarItems[key], data: results })})) : ''
+          ]))
+        }
 
         let label;
 
@@ -64,7 +81,8 @@ const create = (ns = "app") => {
             `p.${ns}-calc-results__item.${ns}-calc-results__item--output`,
             [
               el("span", text(`${output.label}:`)),
-              text(valueText)
+              text(valueText),
+              getActions(key)
             ]
           );
           this.el.appendChild(label);
@@ -111,6 +129,12 @@ const create = (ns = "app") => {
     }
     exclude(...props) {
       this.excludes = [...props];
+      return this;
+    }
+    onAction(handler) {
+      if (typeof handler === 'function') {
+        this.handlers.push(handler);
+      }
       return this;
     }
   }
